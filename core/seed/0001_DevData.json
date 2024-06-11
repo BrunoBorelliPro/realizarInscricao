@@ -1,0 +1,322 @@
+[
+{
+    "model": "core.disciplina",
+    "pk": 1,
+    "fields": {
+        "nome": "Linguagem de Programação I",
+        "codigo": "LP1I1",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 3,
+    "fields": {
+        "nome": "Linguagem de Programação II",
+        "codigo": "LP2I2",
+        "pre_requisito": [
+            1,
+            4
+        ]
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 4,
+    "fields": {
+        "nome": "Algoritmos e Programação",
+        "codigo": "APOI1",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 5,
+    "fields": {
+        "nome": "Arquitetura de Computadores",
+        "codigo": "ARQI1",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 6,
+    "fields": {
+        "nome": "Comunicação e Expressão",
+        "codigo": "CEEI1",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 7,
+    "fields": {
+        "nome": "História da Ciência e Tecnologia",
+        "codigo": "HCTI1",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 8,
+    "fields": {
+        "nome": "Inglês Técnico",
+        "codigo": "INGI1",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 9,
+    "fields": {
+        "nome": "Matemática",
+        "codigo": "MATI1",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 10,
+    "fields": {
+        "nome": "Sistemas Operacionais",
+        "codigo": "SOPI2",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 11,
+    "fields": {
+        "nome": "Engenharia de Software",
+        "codigo": "ESWI2",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 12,
+    "fields": {
+        "nome": "Introdução à Administração",
+        "codigo": "ADMI2",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 13,
+    "fields": {
+        "nome": "Inglês Técnico Avançado",
+        "codigo": "IGTI2",
+        "pre_requisito": [
+            8
+        ]
+    }
+},
+{
+    "model": "core.disciplina",
+    "pk": 14,
+    "fields": {
+        "nome": "Banco de Dados I",
+        "codigo": "BD1I2",
+        "pre_requisito": []
+    }
+},
+{
+    "model": "core.sala",
+    "pk": 1,
+    "fields": {
+        "numero": "1"
+    }
+},
+{
+    "model": "core.sala",
+    "pk": 2,
+    "fields": {
+        "numero": "2"
+    }
+},
+{
+    "model": "core.sala",
+    "pk": 3,
+    "fields": {
+        "numero": "3"
+    }
+},
+{
+    "model": "core.sala",
+    "pk": 4,
+    "fields": {
+        "numero": "4"
+    }
+},
+{
+    "model": "core.professor",
+    "pk": 1,
+    "fields": {
+        "nome": "Professor 1"
+    }
+},
+{
+    "model": "core.turma",
+    "pk": 1,
+    "fields": {
+        "codigo": "Turma 1"
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 1,
+    "fields": {
+        "disciplina": 1,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 3,
+    "fields": {
+        "disciplina": 3,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 4,
+    "fields": {
+        "disciplina": 4,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 5,
+    "fields": {
+        "disciplina": 5,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 6,
+    "fields": {
+        "disciplina": 6,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 7,
+    "fields": {
+        "disciplina": 7,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 8,
+    "fields": {
+        "disciplina": 8,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 9,
+    "fields": {
+        "disciplina": 9,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 10,
+    "fields": {
+        "disciplina": 10,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 11,
+    "fields": {
+        "disciplina": 11,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 12,
+    "fields": {
+        "disciplina": 12,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 13,
+    "fields": {
+        "disciplina": 13,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.ofertadisciplina",
+    "pk": 14,
+    "fields": {
+        "disciplina": 14,
+        "professor": 1,
+        "turma": 1
+    }
+},
+{
+    "model": "core.aluno",
+    "pk": 1,
+    "fields": {
+        "nome": "Aluno 1"
+    }
+},
+{
+    "model": "core.aluno",
+    "pk": 2,
+    "fields": {
+        "nome": "Aluno 2"
+    }
+},
+{
+    "model": "core.aluno",
+    "pk": 3,
+    "fields": {
+        "nome": "Aluno 3"
+    }
+},
+{
+    "model": "core.participacao",
+    "pk": 3,
+    "fields": {
+        "aluno": 1,
+        "ofertaDisciplina": 1,
+        "status": "C"
+    }
+},
+{
+    "model": "core.participacao",
+    "pk": 4,
+    "fields": {
+        "aluno": 1,
+        "ofertaDisciplina": 4,
+        "status": "A"
+    }
+}
+]

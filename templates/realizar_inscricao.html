@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+        
+        <h1>Realizar Inscrição</h1>
+
+        <form>
+            {% csrf_token %}
+            {% comment %} 
+                Selecionar o Aluno
+            {% endcomment %}
+
+            <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Código</th>
+                            <th scope="col">Nome</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% comment %} filtrar diciplinas que o aluno pode cursar {% endcomment %}
+                        {% for disciplina in disciplinas %}
+
+                            <tr>
+                            <td>
+                                    <input type="checkbox" value={{disciplina.codigo}} name="disciplinas" id="disciplinas">
+                                </td>
+                                <td>{{ disciplina.codigo }}</td>
+                                <td>{{ disciplina.nome }}</td>
+                                
+                            </tr>
+
+                        {% empty %} 
+                            <tr>
+                                <td colspan="3">Nenhuma disciplina encontrada</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+        </form>
+{% endblock content %}

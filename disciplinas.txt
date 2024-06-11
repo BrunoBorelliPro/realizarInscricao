@@ -1,0 +1,38 @@
+SUP.01256 (LP1I1)
+Linguagem de Programação I
+
+SUP.01251 (APOI1)
+Algoritmos e Programação
+
+SUP.01252 (ARQI1)
+Arquitetura de Computadores
+
+SUP.01253 (CEEI1)
+Comunicação e Expressão
+
+SUP.01254 (HCTI1)
+História da Ciência e Tecnologia
+
+SUP.01255 (INGI1)
+Inglês Técnico
+
+SUP.01257 (MATI1)
+Matemática
+
+SUP.01263 (SOPI2)
+Sistemas Operacionais
+
+SUP.01260 (ESWI2)
+Engenharia de Software
+
+SUP.01258 (ADMI2)
+Introdução à Administração
+
+SUP.01261 (IGTI2)
+Inglês Técnico Avançado
+
+SUP.01262 (LP2I2)
+Linguagem de Programação II
+
+SUP.01259 (BD1I2)
+Banco de Dados I

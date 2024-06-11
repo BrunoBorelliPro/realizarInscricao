@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -52,7 +53,6 @@ class Aula(models.Model):
 
 class Aluno(models.Model):
     nome = models.CharField(max_length=100)
-    matricula = models.CharField(max_length=10)
 
     def __str__(self):
         return self.nome
@@ -60,6 +60,7 @@ class Aluno(models.Model):
 
 class ListaEspera(models.Model):
     alunos = models.ManyToManyField(Aluno)
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE)
 
 
 class Participacao(models.Model):
