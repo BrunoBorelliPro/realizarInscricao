@@ -2,42 +2,194 @@
 
 {% block content %}
         
-        <h1>Realizar Inscrição</h1>
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+               ERRO: {{ error }}
+            </div>
+        {% endif %}
 
-        <form>
-            {% csrf_token %}
-            {% comment %} 
-                Selecionar o Aluno
-            {% endcomment %}
+        {% if success %}
+            <div class="alert alert-success" role="alert">
+               {{ success }}
+            </div>
+        {% endif %}
 
-            <table class="table">
+        {% if lista_espera %}
+            <div class="alert alert-warning" role="alert">
+               Não há vagas para as seguintes disciplinas:
+               <ul>
+                    {% for oferta in lista_espera %}
+                        <li>{{oferta.disciplina.codigo}} - {{ oferta.disciplina.nome }}</li>
+                    {% endfor %}
+               </ul>
+               Deseja entrar na lista de espera?
+                <form method="post">
+                    {% csrf_token %}
+                    {% for oferta in lista_espera %}
+                        <input type="hidden" name="disciplinas" value={{oferta.disciplina.id}}>
+                    {% endfor %}
+                      <input type="hidden" name="passo" value="lista_espera">
+                      <button type="submit" class="btn btn-primary">Entrar na lista de espera</button>
+                </form>
+            </div>
 
+        {% elif passo == "selecionar" %}
+            <h1>Realizar Inscrição</h1>
+            <form method="post">
+                {% csrf_token %}
+
+                <table class="table">
+
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Código</th>
+                                <th scope="col">Nome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% comment %} filtrar diciplinas que o aluno pode cursar {% endcomment %}
+                            {% for disciplina in disciplinas %}
+
+                                <tr>
+                                <td>
+                                        <input type="checkbox" value={{disciplina.codigo}} name="disciplinas" id="disciplinas">
+                                    </td>
+                                    <td>{{ disciplina.codigo }}</td>
+                                    <td>{{ disciplina.nome }}</td>
+                                    
+                                </tr>
+
+                            {% empty %} 
+                                <tr>
+                                    <td colspan="3">Nenhuma disciplina encontrada</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                </table>
+                <input type="hidden" name="passo" value="selecionar">
+
+                <button type="submit" class="btn btn-primary">Realizar Inscrição</button>
+            
+
+            </form>
+        
+        <h1>Disciplinas Inscritas</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Código</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Professor</th>
+                    <th scope="col">Céditos</th>
+                    <th scope="col">Horários</th>
+                    <th scope="col">Sala</th>
+                    <th scope="col">Cancelar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for participacao in inscricoes %}
+                    <tr>
+                        <td>{{ participacao.ofertaDisciplina.disciplina.codigo }}</td>
+                        <td>{{ participacao.ofertaDisciplina.disciplina.nome }}</td>
+                        <td>{{ participacao.ofertaDisciplina.professor }}</td>
+                        <td>{{ participacao.ofertaDisciplina.aulas.count }}</td>
+                        <td>
+                            {% for aula in participacao.ofertaDisciplina.aulas.all  %}
+                                {{ aula.horario }}<br>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for aula in participacao.ofertaDisciplina.aulas.all  %}
+                                Sala: {{ aula.sala }}<br>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="passo" value="cancelar">
+                                <input type="hidden" name="participacao_id" value="{{ participacao.id }}">
+                                <button type="submit" class="btn btn-danger">Cancelar</button>
+                            </form>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h1>Disciplinas em Espera</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Código</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Cancelar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inscricao in inscricoes_espera %}
+                    <tr>
+                        <td>{{ inscricao.disciplina.codigo }}</td>
+                        <td>{{ inscricao.disciplina.nome }}</td>
+                        <td>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="passo" value="sair_lista_espera">
+                                <input type="hidden" name="lista_espera_id" value="{{ inscricao.id }}">
+                                <button type="submit" class="btn btn-danger">Cancelar</button>
+                            </form>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        {% elif passo == "confirmar" %}
+            <h1>Confirmar de Inscrição</h1>
+            <form method="post">
+                {% csrf_token %}
+                <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col"></th>
+                            <th scope="col">#</th>
                             <th scope="col">Código</th>
                             <th scope="col">Nome</th>
+                            <th scope="col">Professor</th>
+                            <th scope="col">Créditos</th>
+                            <th scope="col">Horários</th>
+                            <th scope="col">Sala</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% comment %} filtrar diciplinas que o aluno pode cursar {% endcomment %}
-                        {% for disciplina in disciplinas %}
-
+                        {% for oferta in ofertas %}
                             <tr>
-                            <td>
-                                    <input type="checkbox" value={{disciplina.codigo}} name="disciplinas" id="disciplinas">
+                                <td>
+                                    <input type="checkbox" value={{oferta.id}} name="ofertas" id="ofertas">
                                 </td>
-                                <td>{{ disciplina.codigo }}</td>
-                                <td>{{ disciplina.nome }}</td>
-                                
-                            </tr>
-
-                        {% empty %} 
-                            <tr>
-                                <td colspan="3">Nenhuma disciplina encontrada</td>
+                                <td>{{ oferta.disciplina.codigo }}</td>
+                                <td>{{ oferta.disciplina.nome }}</td>
+                                <td>{{ oferta.professor }}</td>
+                                <td>{{ oferta.aulas.count }}</td>
+                                <td>
+                                    {% for aula in oferta.aulas.all  %}
+                                        {{ aula.horario }}<br>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for aula in oferta.aulas.all  %}
+                                        Sala: {{ aula.sala }}<br>
+                                    {% endfor %}
+                                </td>
                             </tr>
                         {% endfor %}
-                    </tbody>
 
-        </form>
+                </table>
+                <input type="hidden" name="passo" value="confirmar">
+                <button type="submit" class="btn btn-primary">Confirmar Inscrição</button>
+
+            </form>
+        
+        {% endif %}
+
+
+
+
+
+
 {% endblock content %}
