@@ -34,6 +34,9 @@ class Professor(models.Model):
     def __str__(self):
         return self.nome
 
+    class Meta:
+        verbose_name_plural = "Professores"
+
 
 class Turma(models.Model):
     codigo = models.CharField(max_length=10)
@@ -55,9 +58,9 @@ class OfertaDisciplina(models.Model):
     def creditos(self):
         return self.aulas.count()
 
-    def verificar_choque_de_horario(self, oferta_disciplina):
+    def verificar_choque_de_horario(self, lista_de_ofertas):
         # Verifica se há choque de horário
-        for o in oferta_disciplina:
+        for o in lista_de_ofertas:
             if self.id != o.id:
                 if self._verificar_choque_de_horario(o):
                     raise ChoqueDeHorarioError(
@@ -75,6 +78,9 @@ class OfertaDisciplina(models.Model):
 
     def horarios(self):
         return [aula.horario() for aula in self.aulas.all()]
+
+    class Meta:
+        verbose_name_plural = "Ofertas de Disciplinas"
 
 
 class Aula(models.Model):
@@ -145,6 +151,9 @@ class ListaEspera(models.Model):
     def __str__(self):
         return f"{self.disciplina.nome} - {self.alunos.count()} alunos"
 
+    class Meta:
+        verbose_name_plural = "Listas de Espera"
+
 
 class Participacao(models.Model):
 
@@ -161,3 +170,6 @@ class Participacao(models.Model):
 
     def __str__(self):
         return f"{self.aluno.nome} - {self.ofertaDisciplina}"
+
+    class Meta:
+        verbose_name_plural = "Participações"
