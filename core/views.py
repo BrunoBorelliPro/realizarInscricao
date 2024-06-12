@@ -51,7 +51,7 @@ class ControladorInscricao(TemplateView):
             return self.entrar_na_lista_espera(request, context)
 
         elif request.POST.get("passo") == "cancelar":
-            return self.cancelar(request, context)
+            return self.cancelar_inscricao(request, context)
 
         elif request.POST.get("passo") == "sair_lista_espera":
             return self.sair_lista_espera(request, context)
@@ -172,7 +172,7 @@ class ControladorInscricao(TemplateView):
 
         return self.get(request, success="Aluno removido da lista de espera")
 
-    def cancelar(self, request, *args, **kwargs):
+    def cancelar_inscricao(self, request, context):
         aluno_id = self.kwargs.get("aluno_id")
         aluno = Aluno.objects.get(id=aluno_id)
         participacao_id = request.POST.get("participacao_id")
