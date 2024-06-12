@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+from core.errors import ChoqueDeHorarioError
+
 
 class Disciplina(models.Model):
     nome = models.CharField(max_length=100)
@@ -54,6 +56,17 @@ class OfertaDisciplina(models.Model):
         return self.aulas.count()
 
     def verificar_choque_de_horario(self, oferta_disciplina):
+        # Verifica se há choque de horário
+        for o in oferta_disciplina:
+            if self.id != o.id:
+                if self._verificar_choque_de_horario(o):
+                    raise ChoqueDeHorarioError(
+                        f"{self} - {self.horarios()}",
+                        f"{o} - {o.horarios()}",
+                    )
+        return False
+
+    def _verificar_choque_de_horario(self, oferta_disciplina):
         for aula in self.aulas.all():
             for aula_oferta in oferta_disciplina.aulas.all():
                 if aula.verificar_choque_de_horario(aula_oferta):

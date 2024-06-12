@@ -42,7 +42,7 @@ class ControladorInscricao(TemplateView):
             return self.selecionar_disciplinas(request, context)
         elif request.POST.get("passo") == "confirmar":
             try:
-                return self.confirmar_inscricao(request, context)
+                return self.realizar_inscricao(request, context)
             except Exception as e:
                 print(e)
                 return self.get(request, error=e)
@@ -73,22 +73,12 @@ class ControladorInscricao(TemplateView):
         context["ofertas"] = ofertas
         return render(request, self.template_name, context)
 
-    def confirmar_inscricao(self, request, context):
+    def realizar_inscricao(self, request, context):
+        # Obtendo dados necessários
         aluno_id = self.kwargs.get("aluno_id")
-
-        print(request.POST)
         aluno = Aluno.objects.get(id=aluno_id)
         id_ofertas = request.POST.getlist("ofertas")
-
         ofertas = OfertaDisciplina.objects.filter(id__in=id_ofertas)
-        if not ofertas:
-            return redirect("inscricao", aluno_id=aluno_id)
-
-        lista_espera = []
-        ofertas_cursando_ids = aluno.participacao_set.filter(status="C").values_list(
-            "ofertaDisciplina", flat=True
-        )
-        ofertas_cursando = OfertaDisciplina.objects.filter(id__in=ofertas_cursando_ids)
 
         for oferta in ofertas:
             # Verifica se o aluno se inscreveu em duas disciplinas iguais
@@ -96,45 +86,55 @@ class ControladorInscricao(TemplateView):
             if len(num) > 1:
                 raise InscritoEmDuasDisciplinasIguaisError(num[0].disciplina.codigo)
 
-            # Verifica se há choque de horário
-            for o in ofertas_cursando:
-                if oferta.id != o.id:
-                    if oferta.verificar_choque_de_horario(o):
-                        raise ChoqueDeHorarioError(
-                            f"{oferta} - {oferta.horarios()}",
-                            f"{o} - {o.horarios()}",
-                        )
+        if not ofertas:
+            return redirect("inscricao", aluno_id=aluno_id)
 
-            for o in ofertas:
-                if oferta.id != o.id:
-                    if oferta.verificar_choque_de_horario(o):
-                        raise ChoqueDeHorarioError(
-                            f"{oferta} - {oferta.horarios()}",
-                            f"{o} - {o.horarios()}",
-                        )
-
-            # Verifica se a oferta já atingiu o limite de inscrições
-            print(f"{oferta} - {oferta.participacao_set.count()}")
-            if oferta.participacao_set.count() >= oferta.vagas:
-                lista_espera.append(oferta)
-
-        if lista_espera:
-            ofertas = ofertas.exclude(id__in=[oferta.id for oferta in lista_espera])
-
+        ofertas_cursando_ids = aluno.participacao_set.filter(status="C").values_list(
+            "ofertaDisciplina", flat=True
+        )
+        ofertas_cursando = OfertaDisciplina.objects.filter(id__in=ofertas_cursando_ids)
         creditos = sum([oferta.creditos() for oferta in ofertas]) + aluno.get_creditos()
+        # Obtendo dados necessários - fim
+
+        # Verificar choque de horários
+        # Caso haja choque de horários, uma exceção será lançada,
+        #  a inscrição não será realizada e a mensagem de erro será exibida
+        self._verificar_choque_de_horario(ofertas, ofertas_cursando)
+        # Verificar choque de horários - fim
+
+        # Verificar número de créditos
+        # Caso o número de créditos exceda 20, uma exceção será lançada,
+        # a inscrição não será realizada e a mensagem de erro será exibida
         print(f"Créditos: {creditos}")
         if creditos > 20:
             raise NumeroDeCreditosExcedidoError()
+        # Verificar número de créditos - fim
 
+        # Verificar disponibilidade de vagas
+        # Caso a oferta já tenha atingido o limite de inscrições, o aluno será adicionado à lista de espera
+        lista_espera = self._verificar_lista_espera(ofertas)
+        if lista_espera:
+            ofertas = ofertas.exclude(id__in=[oferta.id for oferta in lista_espera])
+        # Verificar disponibilidade de vagas - fim
+
+        # Inscrever o aluno nas disciplinas
+        # Caso o aluno não esteja cursando a disciplina, ele será inscrito
+        # Caso o aluno já esteja cursando a disciplina, a inscrição será ignorada
         for oferta in ofertas:
             cursando = oferta.participacao_set.filter(aluno=aluno, status="C")
             if not cursando:
                 oferta.participacao_set.create(aluno=aluno, status="C")
+        # Inscrever o aluno nas disciplinas - fim
 
+        # Adicionar o aluno à lista de espera
+        # Caso o aluno tenha sido adicionado à lista de espera,
+        # ele será redirecionado para a página informando em quais
+        # disciplinas ele foi adicionado à lista de espera
         if lista_espera:
             print(f"Lista de espera: {lista_espera}")
             context["lista_espera"] = lista_espera
             return render(request, self.template_name, context)
+        # Adicionar o aluno à lista de espera - fim
 
         return self.get(request, success="Inscrição realizada com sucesso")
 
@@ -180,6 +180,20 @@ class ControladorInscricao(TemplateView):
         participacao.delete()
 
         return redirect("inscricao", aluno_id=aluno_id)
+
+    def _verificar_choque_de_horario(self, ofertas, ofertas_cursando):
+        for oferta in ofertas:
+            oferta.verificar_choque_de_horario(ofertas)
+            oferta.verificar_choque_de_horario(ofertas_cursando)
+
+    def _verificar_lista_espera(self, ofertas):
+        lista_espera = []
+        for oferta in ofertas:
+            # Verifica se a oferta já atingiu o limite de inscrições
+            print(f"{oferta} - {oferta.participacao_set.count()}")
+            if oferta.participacao_set.count() >= oferta.vagas:
+                lista_espera.append(oferta)
+        return lista_espera
 
 
 def login_view(request):
