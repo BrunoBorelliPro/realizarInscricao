@@ -76,6 +76,9 @@ class OfertaDisciplina(models.Model):
     def horarios(self):
         return [aula.horario() for aula in self.aulas.all()]
 
+    def vagas_ocupadas(self):
+        return self.participacao_set.filter(status="C").count()
+
     class Meta:
         verbose_name_plural = "Ofertas de Disciplinas"
 

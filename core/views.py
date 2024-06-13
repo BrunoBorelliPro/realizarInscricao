@@ -207,8 +207,7 @@ class ControladorInscricao(TemplateView):
         lista_espera = []
         for oferta in ofertas:
             # Verifica se a oferta já atingiu o limite de inscrições
-            print(f"{oferta} - {oferta.participacao_set.count()}")
-            if oferta.participacao_set.count() >= oferta.vagas:
+            if oferta.vagas_ocupadas() >= oferta.vagas:
                 lista_espera.append(oferta)
         return lista_espera
 
