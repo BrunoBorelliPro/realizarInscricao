@@ -63,10 +63,7 @@ class OfertaDisciplina(models.Model):
         for o in lista_de_ofertas:
             if self.id != o.id:
                 if self._verificar_choque_de_horario(o):
-                    raise ChoqueDeHorarioError(
-                        f"{self} - {self.horarios()}",
-                        f"{o} - {o.horarios()}",
-                    )
+                    return o
         return False
 
     def _verificar_choque_de_horario(self, oferta_disciplina):

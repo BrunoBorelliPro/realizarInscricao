@@ -1,0 +1,136 @@
+@startuml 
+
+    class "Explanation of the symbols used" as DESCRIPTION #FFF {
+    - AutoField (identifiers)
+    ..
+    + Regular field (anything)
+    ..
+    # ForeignKey (ManyToMany)
+    ..
+    ~ ForeignKey (OneToOne, OneToMany)
+    --
+}
+
+
+class "core.Disciplina <Core>" as core.Disciplina #e8f4d6 {
+    disciplina
+    ..
+    Disciplina(id, nome, codigo)
+    --
+    + id (BigAutoField) - 
+    + nome (CharField) - 
+    + codigo (CharField) - 
+    # pre_requisito (ManyToManyField) - 
+    --
+}
+core.Disciplina *--* core.Disciplina
+
+
+class "core.Sala <Core>" as core.Sala #e8f4d6 {
+    sala
+    ..
+    Sala(id, numero)
+    --
+    + id (BigAutoField) - 
+    + numero (CharField) - 
+    --
+}
+
+
+class "core.Professor <Core>" as core.Professor #e8f4d6 {
+    professor
+    ..
+    Professor(id, nome)
+    --
+    + id (BigAutoField) - 
+    + nome (CharField) - 
+    --
+}
+
+
+class "core.Turma <Core>" as core.Turma #e8f4d6 {
+    turma
+    ..
+    Turma(id, codigo)
+    --
+    + id (BigAutoField) - 
+    + codigo (CharField) - 
+    --
+}
+
+
+class "core.OfertaDisciplina <Core>" as core.OfertaDisciplina #e8f4d6 {
+    oferta disciplina
+    ..
+    OfertaDisciplina(id, disciplina, professor, turma, vagas)
+    --
+    + id (BigAutoField) - 
+    ~ disciplina (ForeignKey) - 
+    ~ professor (ForeignKey) - 
+    ~ turma (ForeignKey) - 
+    + vagas (IntegerField) - 
+    # aulas (ManyToManyField) - 
+    --
+}
+core.OfertaDisciplina -- core.Disciplina
+core.OfertaDisciplina -- core.Professor
+core.OfertaDisciplina -- core.Turma
+core.OfertaDisciplina *--* core.Aula
+
+
+class "core.Aula <Core>" as core.Aula #e8f4d6 {
+    aula
+    ..
+    Aula(id, sala, horario_inicio, horario_fim, dia_da_semana)
+    --
+    + id (BigAutoField) - 
+    ~ sala (ForeignKey) - 
+    + horario_inicio (TimeField) - 
+    + horario_fim (TimeField) - 
+    + dia_da_semana (CharField) - 
+    --
+}
+core.Aula -- core.Sala
+
+
+class "core.Aluno <Core>" as core.Aluno #e8f4d6 {
+    aluno
+    ..
+    Aluno(id, nome)
+    --
+    + id (BigAutoField) - 
+    + nome (CharField) - 
+    --
+}
+
+
+class "core.ListaEspera <Core>" as core.ListaEspera #e8f4d6 {
+    lista espera
+    ..
+    ListaEspera(id, disciplina)
+    --
+    + id (BigAutoField) - 
+    ~ disciplina (ForeignKey) - 
+    # alunos (ManyToManyField) - 
+    --
+}
+core.ListaEspera -- core.Disciplina
+core.ListaEspera *--* core.Aluno
+
+
+class "core.Participacao <Core>" as core.Participacao #e8f4d6 {
+    participacao
+    ..
+    Participacao(id, aluno, ofertaDisciplina, status)
+    --
+    + id (BigAutoField) - 
+    ~ aluno (ForeignKey) - 
+    ~ ofertaDisciplina (ForeignKey) - 
+    + status (CharField) - 
+    --
+}
+core.Participacao -- core.Aluno
+core.Participacao -- core.OfertaDisciplina
+
+
+@enduml

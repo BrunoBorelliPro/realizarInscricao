@@ -14,6 +14,12 @@
             </div>
         {% endif %}
 
+        {% if warning %}
+            <div class="alert alert-warning" role="alert">
+               {{ warning }}
+            </div>
+        {% endif %}
+
         {% if lista_espera %}
             <div class="alert alert-warning" role="alert">
                Não há vagas para as seguintes disciplinas:
@@ -30,6 +36,7 @@
                     {% endfor %}
                       <input type="hidden" name="passo" value="lista_espera">
                       <button type="submit" class="btn btn-primary">Entrar na lista de espera</button>
+                      <button type="submit" class="btn btn-danger" name="nao_adicionar" value="1">Cancelar</button>
                 </form>
             </div>
 

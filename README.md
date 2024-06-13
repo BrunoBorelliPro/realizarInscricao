@@ -1,8 +1,8 @@
 # Caso de uso realizar inscrição:
 
-![Caso de uso textutal](textual.png)
+![Caso de uso textutal](Imagens/textual.png)
 
-![Diagrama de classes](dc.png)
+![Diagrama de classes](Imagens/dc.png)
 
 
 # Como rodar a aplicação

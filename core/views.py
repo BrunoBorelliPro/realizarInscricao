@@ -12,6 +12,7 @@ from core.models import Aluno, Disciplina, ListaEspera, OfertaDisciplina
 class ControladorInscricao(TemplateView):
     template_name = "realizar_inscricao.html"
     success_url = "/"
+    aluno: Aluno
 
     def get_context_data(self, **kwargs):
         aluno_id = self.kwargs.get("aluno_id")
@@ -93,18 +94,23 @@ class ControladorInscricao(TemplateView):
             "ofertaDisciplina", flat=True
         )
         ofertas_cursando = OfertaDisciplina.objects.filter(id__in=ofertas_cursando_ids)
-        creditos = sum([oferta.creditos() for oferta in ofertas]) + aluno.get_creditos()
         # Obtendo dados necessários - fim
 
         # Verificar choque de horários
         # Caso haja choque de horários, uma exceção será lançada,
         #  a inscrição não será realizada e a mensagem de erro será exibida
-        self._verificar_choque_de_horario(ofertas, ofertas_cursando)
+        choque = self._verificar_choque_de_horario(ofertas, ofertas_cursando)
+        if choque:
+            raise ChoqueDeHorarioError(
+                f"{choque[0]} - {choque[0].horarios()}",
+                f"{choque[1]} - {choque[1].horarios()}",
+            )
         # Verificar choque de horários - fim
 
         # Verificar número de créditos
         # Caso o número de créditos exceda 20, uma exceção será lançada,
         # a inscrição não será realizada e a mensagem de erro será exibida
+        creditos = self.get_creditos(aluno, ofertas)
         print(f"Créditos: {creditos}")
         if creditos > 20:
             raise NumeroDeCreditosExcedidoError()
@@ -133,14 +139,20 @@ class ControladorInscricao(TemplateView):
         if lista_espera:
             print(f"Lista de espera: {lista_espera}")
             context["lista_espera"] = lista_espera
+            context["aluno"] = aluno
+
             return render(request, self.template_name, context)
         # Adicionar o aluno à lista de espera - fim
 
         return self.get(request, success="Inscrição realizada com sucesso")
 
     def entrar_na_lista_espera(self, request, context):
+        if request.POST.get("nao_adicionar"):
+            return self.get(
+                request,
+                warning="Inscrição realizada com sucesso nas outras disciplinas, mas o aluno não foi adicionado à lista de espera",
+            )
         aluno_id = self.kwargs.get("aluno_id")
-
         aluno = Aluno.objects.get(id=aluno_id)
         id_disciplinas = request.POST.getlist("disciplinas")
 
@@ -183,8 +195,13 @@ class ControladorInscricao(TemplateView):
 
     def _verificar_choque_de_horario(self, ofertas, ofertas_cursando):
         for oferta in ofertas:
-            oferta.verificar_choque_de_horario(ofertas)
-            oferta.verificar_choque_de_horario(ofertas_cursando)
+            choque = oferta.verificar_choque_de_horario(
+                ofertas
+            ) or oferta.verificar_choque_de_horario(ofertas_cursando)
+            if choque:
+                return oferta, choque
+
+        return False
 
     def _verificar_lista_espera(self, ofertas):
         lista_espera = []
@@ -194,6 +211,9 @@ class ControladorInscricao(TemplateView):
             if oferta.participacao_set.count() >= oferta.vagas:
                 lista_espera.append(oferta)
         return lista_espera
+
+    def get_creditos(self, aluno, ofertas):
+        return sum([oferta.creditos() for oferta in ofertas]) + aluno.get_creditos()
 
 
 def login_view(request):
