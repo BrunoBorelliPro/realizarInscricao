@@ -79,6 +79,12 @@ class OfertaDisciplina(models.Model):
     def vagas_ocupadas(self):
         return self.participacao_set.filter(status="C").count()
 
+    def inscrever_aluno(self, aluno):
+        self.participacao_set.create(aluno=aluno, status="C")
+
+    def aluno_esta_inscrito(self, aluno):
+        cursando = self.participacao_set.filter(aluno=aluno, status="C")
+
     class Meta:
         verbose_name_plural = "Ofertas de Disciplinas"
 
