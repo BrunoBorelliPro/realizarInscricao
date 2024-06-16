@@ -79,7 +79,8 @@ class OfertaDisciplinaTestCase(TestCase):
         self.oferta_disciplina.aulas.add(aula1)
         self.oferta_disciplina.aulas.add(aula2)
         # Verifica se a função creditos retorna o número correto de créditos
-        self.assertEqual(self.oferta_disciplina.creditos(), 2)
+        creditos = self.oferta_disciplina.creditos()
+        self.assertEqual(creditos, 2)
 
 
 class RealizarInscricaoTestCase(TestCase):
