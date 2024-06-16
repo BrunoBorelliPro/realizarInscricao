@@ -1,11 +1,15 @@
 from unittest.mock import MagicMock, patch
 from django.test import TestCase
-from core.models import Aluno, OfertaDisciplina
+from core.models import Aluno, Disciplina, OfertaDisciplina, Professor, Turma
 from core.views import ControladorInscricao
 
 
 # RN002: Quantidade de alunos possíveis
 # Descricao: Uma turma não pode ter mais alunos inscritos do que a capacidade máxima definida para ela.
+
+# TESTES DE UNIDADE
+
+
 class RealizarInscricaoTestCase(TestCase):
     def setUp(self):
         self.controlador = ControladorInscricao()
@@ -100,3 +104,65 @@ class RealizarInscricaoTestCase(TestCase):
 
         lista_espera = self.controlador._verificar_lista_espera(query_set)
         self.assertEqual(lista_espera, [])
+
+
+# TESTES DE INTEGRAÇÃO
+
+
+class RealizarInscricaoIntegracaoTestCase(TestCase):
+    def setUp(self):
+        self.controlador = ControladorInscricao()
+        self.controlador.template_name = "realizar_inscricao.html"
+        self.controlador.success_url = "/"
+
+    @patch("core.views.render")
+    def test_realizar_inscricao_em_disciplina_sem_vagas(self, mock_render):
+        # Cria um aluno
+        aluno = Aluno.objects.create(nome="Aluno Teste")
+        # Cria uma disciplina
+        disciplina = Disciplina.objects.create(nome="Disciplina", codigo="DISC01")
+        # Cria um professor
+        professor = Professor.objects.create(nome="Professor")
+        # Cria uma turma
+        turma = Turma.objects.create(codigo="T01")
+
+        # Cria uma oferta de disciplina com 2 créditos
+        oferta_disciplina = OfertaDisciplina.objects.create(
+            disciplina=disciplina,
+            professor=professor,
+            turma=turma,
+            vagas=0,
+        )
+
+        oferta_disciplina.save()
+
+        # Emulando a lógica do ORM
+        # Cria um base manager com a oferta de disciplina
+        # Cria um queryset com a oferta de disciplina
+        query_set = OfertaDisciplina.objects.all()
+
+        with patch.object(
+            self.controlador,
+            "get",
+            return_value=query_set,
+        ) as mock_get:
+            response = self.controlador.realizar_inscricao(
+                request=None,
+                context={},
+                aluno=aluno,
+                ofertas=query_set,
+                ofertas_cursando=[],
+            )
+            # Verifica se o método get não foi chamado
+            mock_get.assert_not_called()
+
+        # Verifica se a função render foi chamada
+
+        mock_render.assert_called_once_with(
+            None,
+            self.controlador.template_name,
+            {
+                "lista_espera": [oferta_disciplina],
+                "aluno": aluno,
+            },
+        )
